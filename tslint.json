@@ -51,7 +51,7 @@
     "no-use-before-declare": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [
-      true,
+      false,
       "as-needed"
     ],
     "object-literal-sort-keys": false,
@@ -69,7 +69,11 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     "one-variable-per-declaration": false,
-    "component-class-suffix": [true, "Page", "Component"],
+    "component-class-suffix": [
+      true,
+      "Page",
+      "Component"
+    ],
     "directive-class-suffix": true,
     "directive-selector": [
       true,
@@ -83,6 +87,11 @@
       "app",
       "page",
       "kebab-case"
+    ],
+    "object-curly-spacing": true,
+    "array-bracket-spacing": [
+      true,
+      "never"
     ]
   }
 }

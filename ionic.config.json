@@ -1,5 +1,7 @@
 {
-  "name": "achivements",
-  "integrations": {},
+  "name": "achievements",
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Completed</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col>
+        <ng-container *ngIf="state$ | async as state">
+          <app-task-list [list]="state.completed"></app-task-list>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
