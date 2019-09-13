@@ -1,17 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { Select } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { TasksState, ITasksState } from '@app/store/tasks.state';
+import { CompleteTask } from '@src/app/store/tasks.actions';
+import { ITask } from '@src/app/core/interfaces/task.interface';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.page.html',
   styleUrls: ['./tasks.page.scss']
 })
-export class TasksPage implements OnInit {
+export class TasksPage {
   @Select(TasksState) state$!: Observable<ITasksState>;
 
-  constructor() {}
+  constructor(private store: Store) { }
 
-  ngOnInit() {}
+  onCompleteTask(task: ITask) {
+    this.store.dispatch(new CompleteTask(task));
+  }
 }

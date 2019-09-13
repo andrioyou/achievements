@@ -5,29 +5,19 @@
 </ion-header>
 
 <ion-content>
-    <ion-grid fixed>
-      <ion-row>
-        <ion-col>
-  
-          <firebase-ui></firebase-ui>
-  
-          <ng-container *ngIf="state$ | async as state">
-            <ng-container *ngIf="state.user as user">
-              <ion-card class="ion-no-margin">
-                <ion-img *ngIf="user.photoURL" [src]="user.photoURL"></ion-img>
-                <ion-card-header>
-                  <ion-card-subtitle>{{ user.email }}</ion-card-subtitle>
-                  <ion-card-title *ngIf="user.displayName">{{ user.displayName }}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>{{ user.uid }}</ion-card-content>
-              </ion-card>
+  <app-grid-wrap *ngIf="state$ | async as state">
+    
+    <ng-container *ngIf="state.user as user">
+      <ion-card class="ion-no-margin">
+        <ion-img *ngIf="user.photoURL" [src]="user.photoURL"></ion-img>
+        <ion-card-header>
+          <ion-card-subtitle>{{ user.email }}</ion-card-subtitle>
+          <ion-card-title *ngIf="user.displayName">{{ user.displayName }}</ion-card-title>
+        </ion-card-header>
+      </ion-card>
 
-              <ion-button class="ion-margin-vertical" *ngIf="user" (click)="onSignOut()">Sign out</ion-button>
-            </ng-container>
-          </ng-container>
-  
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  
-  </ion-content>
+      <ion-button class="ion-margin-vertical" *ngIf="user" (click)="onSignOut()">Sign out</ion-button>
+    </ng-container>
+
+  </app-grid-wrap>
+</ion-content>

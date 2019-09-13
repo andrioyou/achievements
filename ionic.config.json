@@ -1,7 +1,8 @@
 {
   "name": "achievements",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "type": "angular"
 }

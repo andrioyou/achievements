@@ -1,9 +1,11 @@
 <ion-list>
-  <ion-item *ngFor="let item of list" (click)="onChangeCompleteStatus(item)">
-    <ion-label>
-      {{ item.title }}
-      <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
-    </ion-label>
-    <ion-checkbox color="primary" slot="end" [checked]="item.completed"></ion-checkbox>
-  </ion-item>
+  <ng-container *ngFor="let item of list">
+    <ion-item class="ion-no-padding" *ngIf="item.completed === completedStatus" (click)="onTaskClick(item)">
+      <ion-label>
+        {{ item.title }}
+        <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
+      </ion-label>
+      <ion-checkbox color="primary" slot="end" [checked]="item.completed"></ion-checkbox>
+    </ion-item>
+  </ng-container>
 </ion-list>

@@ -1,111 +1,92 @@
 import { State, StateContext, Action, Store, NgxsOnInit } from '@ngxs/store';
 import { ITask } from '../core/interfaces/task.interface';
-import { GetTasks, GetUser, RemoveUser, CompleteTask, UncompleteTask } from './tasks.actions';
-import { Task } from '../core/models/task.model';
-import { User } from '../core/interfaces/user.interface';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { GetTasks, SignOut, GetCategories, CompleteTask, AddTask, DeleteTask } from './tasks.actions';
+import { IUser } from '../core/interfaces/user.interface';
+import { AuthService } from '../core/services/auth.service';
+import { Router } from '@angular/router';
+import { FirestoreService } from '../core/services/firestore.service';
 
 export interface ITasksState {
   list: ITask[];
-  uncompleted: ITask[];
-  completed: ITask[];
   categories: string[];
   isAuthenticated: boolean;
-  user: User | null;
+  user: IUser | null;
 }
 
 @State<ITasksState>({
   name: 'posts',
   defaults: {
     list: [],
-    uncompleted: [],
-    completed: [],
     categories: [],
     isAuthenticated: false,
     user: null,
   }
 })
 export class TasksState implements NgxsOnInit {
+
   constructor(
     private store: Store,
-    private afAuth: AngularFireAuth
+    private authService: AuthService,
+    private firestoreService: FirestoreService,
+    private router: Router
   ) { }
 
-  ngxsOnInit() {
-    this.store.dispatch(new GetTasks());
+  ngxsOnInit(ctx: StateContext<ITasksState>) {
+
+    ctx.patchState({ isAuthenticated: this.authService.isAuthenticated() });
+
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.firestoreService.writeUser(user);
+        this.store.dispatch(new GetTasks());
+        this.store.dispatch(new GetCategories());
+        ctx.patchState({
+          user,
+          isAuthenticated: true
+        });
+      } else {
+        ctx.patchState({
+          user: null,
+          isAuthenticated: false
+        });
+      }
+    });
   }
 
   @Action(GetTasks)
   getTasks(ctx: StateContext<ITasksState>) {
-    const list = [
-      new Task({
-        id: '1',
-        title: 'Drink water',
-        completed: false,
-        category: 'Home'
-      }),
-      new Task({
-        id: '2',
-        title: 'Do running',
-        completed: true,
-        category: 'Home'
-      }),
-      new Task({
-        id: '3',
-        title: 'Pay taxes',
-        completed: false,
-        category: 'Job'
-      }),
-      new Task({
-        id: '4',
-        title: 'Do something',
-        completed: false,
-        category: 'Home'
-      }),
-    ];
-    const uncompleted = list.filter(task => !task.completed);
-    const completed = list.filter(task => task.completed);
-    const categories = ['Job', 'Home'];
-    ctx.patchState({
-      list,
-      uncompleted,
-      completed,
-      categories
-    });
+    this.firestoreService.getTasks().subscribe(list => ctx.patchState({ list }));
+  }
+
+  @Action(AddTask)
+  addTask(ctx: StateContext<ITasksState>, action: AddTask) {
+    this.firestoreService.addTask(action.task);
+  }
+
+  @Action(DeleteTask)
+  deleteTask(ctx: StateContext<ITasksState>, action: DeleteTask) {
+    this.firestoreService.deleteTask(action.task);
   }
 
   @Action(CompleteTask)
   completeTask(ctx: StateContext<ITasksState>, action: CompleteTask) {
-    ctx.patchState({});
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = list[taskIndex];
+    task.completed = true;
+    this.firestoreService.updateTask(task);
   }
 
-  @Action(CompleteTask)
-  UncompleteTask(ctx: StateContext<ITasksState>, action: UncompleteTask) {
-    ctx.patchState({});
+  @Action(GetCategories)
+  getCategories(ctx: StateContext<ITasksState>) {
+    const categories = ['Job', 'Home'];
+    ctx.patchState({ categories });
   }
 
-  @Action(GetUser)
-  getUser(ctx: StateContext<ITasksState>) {
-    let user: User | null = null;
-
-    this.afAuth.authState
-      .subscribe(userIn => {
-        if (userIn) {
-          user = {
-            uid: userIn.uid,
-            displayName: userIn.displayName,
-            email: userIn.email,
-            photoURL: userIn.photoURL,
-          };
-        }
-
-        ctx.patchState({ user });
-      });
-  }
-
-  @Action(RemoveUser)
-  removeUser(ctx: StateContext<ITasksState>) {
-    this.afAuth.auth.signOut();
-    ctx.patchState({ user: null });
+  @Action(SignOut)
+  signOut() {
+    this.authService.signOut().then(() => {
+      this.router.navigate(['auth']);
+    });
   }
 }

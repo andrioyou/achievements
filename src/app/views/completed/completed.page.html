@@ -5,13 +5,11 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid fixed>
-    <ion-row>
-      <ion-col>
-        <ng-container *ngIf="state$ | async as state">
-          <app-task-list [list]="state.completed"></app-task-list>
-        </ng-container>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <app-grid-wrap *ngIf="state$ | async as state">
+    <app-task-list
+      [list]="state.list"
+      [completedStatus]="true"
+      (taskClick)="onDeleteTask($event)"
+    ></app-task-list>
+  </app-grid-wrap>
 </ion-content>

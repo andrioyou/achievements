@@ -1,27 +1,19 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { AuthService } from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(public router: Router, private afAuth: AngularFireAuth) {
-    console.log(this.afAuth.auth.currentUser);
-    setTimeout(() => {
-      console.log(this.afAuth.auth.currentUser);
-    }, 2000);
-  }
+  constructor(public router: Router, private authService: AuthService) { }
 
   canActivate(): boolean {
-    return true;
-    // this.router.navigateByUrl('/auth');
-    // return false;
-    // if (this.authService.hasToken()) {
-    //   return true;
-    // } else {
-    //   this.router.navigateByUrl('/auth');
-    //   return false;
-    // }
+    if (this.authService.isAuthenticated()) {
+      return true;
+    } else {
+      this.router.navigateByUrl('/auth');
+      return false;
+    }
   }
 }

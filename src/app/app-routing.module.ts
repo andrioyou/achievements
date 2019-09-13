@@ -6,7 +6,11 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./views/tabs/tabs.module').then(m => m.TabsPageModule),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'add-task',
+    loadChildren: './views/add-task/add-task.module#AddTaskPageModule'
   },
   {
     path: 'terms',
@@ -19,6 +23,10 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: './views/auth/auth.module#AuthPageModule'
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
 @NgModule({

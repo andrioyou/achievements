@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ITask } from '@src/app/core/interfaces/task.interface';
 
 @Component({
@@ -6,18 +6,16 @@ import { ITask } from '@src/app/core/interfaces/task.interface';
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent {
   @Input() list!: ITask[];
-  @Output() completeTask = new EventEmitter<string>();
-  @Output() uncompleteTask = new EventEmitter<string>();
+  @Input() completedStatus = false;
+  @Output() taskClick = new EventEmitter<string>();
 
   constructor() { }
 
-  ngOnInit() { }
-
-  onChangeCompleteStatus(task: ITask) {
-    (task.completed)
-      ? this.uncompleteTask.emit(task.id)
-      : this.completeTask.emit(task.id);
+  onTaskClick(id: string) {
+    setTimeout(() => {
+      this.taskClick.emit(id);
+    }, 500);
   }
 }

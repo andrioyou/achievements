@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { SettingsPage } from './settings.page';
 import { FirebaseUIModule } from 'firebaseui-angular';
+import { SharedModule } from '@src/app/shared/shared.module';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FirebaseUIModule,
+    SharedModule,
   ],
   declarations: [SettingsPage]
 })
