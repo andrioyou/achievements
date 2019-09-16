@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { TasksState, ITasksState } from '@src/app/store/tasks.state';
-import { DeleteTask } from '@src/app/store/tasks.actions';
+import { ArchiveTask } from '@src/app/store/tasks.actions';
 import { ITask } from '@src/app/core/interfaces/task.interface';
 
 @Component({
@@ -16,6 +16,6 @@ export class CompletedPage {
   constructor(private store: Store) { }
 
   onDeleteTask(task: ITask) {
-    this.store.dispatch(new DeleteTask(task));
+    this.store.dispatch(new ArchiveTask(task));
   }
 }

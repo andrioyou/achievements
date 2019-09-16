@@ -5,16 +5,25 @@ export class Task implements ITask {
   title: string;
   completed: boolean;
   category: string;
+  archived: boolean;
+  createdDate: Date;
+  completedDate: Date;
 
   constructor(params: {
-    id: string;
+    id?: string;
     title: string;
-    completed: boolean;
-    category: string
+    completed?: boolean;
+    category?: string;
+    archived?: boolean;
+    createdDate?: Date;
+    completedDate?: Date;
   }) {
-    this.id = params.id;
+    this.id = new Date().getTime().toString();
     this.title = params.title;
-    this.completed = params.completed;
-    this.category = params.category;
+    this.completed = params.completed || false;
+    this.category = params.category || '';
+    this.archived = params.archived || false;
+    this.createdDate = new Date();
+    this.completedDate = params.completedDate || new Date();
   }
 }

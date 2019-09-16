@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
+import { Select, Store } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
+import { TasksState, ITasksState } from '@src/app/store/tasks.state';
+
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Label } from 'ng2-charts';
+import { GetTasksArchived } from '@src/app/store/tasks.actions';
 
 @Component({
   selector: 'app-stats',
@@ -9,6 +14,9 @@ import { Label } from 'ng2-charts';
   styleUrls: ['./stats.page.scss'],
 })
 export class StatsPage {
+  @Select(TasksState) state$!: Observable<ITasksState>;
+  stateSub!: Subscription;
+
   public barChartOptions: ChartOptions = {
     responsive: true,
     // We use these empty structures as placeholders for dynamic theming.
@@ -26,30 +34,19 @@ export class StatsPage {
   public barChartPlugins = [pluginDataLabels];
 
   public barChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 43], label: 'Year' }
+    { data: [65, 59, 80, 81, 56, 55, 43], label: 'Created' },
+    { data: [81, 56, 55, 43, 65, 59, 80], label: 'Completed' },
   ];
 
-  constructor() { }
+  constructor(private store: Store) { }
 
-  // events
-  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
+  ionViewWillEnter() {
+    this.store.dispatch(new GetTasksArchived());
+    this.stateSub = this.state$.subscribe(d => console.log(d));
   }
 
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
+  ionViewDidLeave() {
+    this.stateSub.unsubscribe();
   }
 
-  public randomize(): void {
-    // Only Change 3 values
-    const data = [
-      Math.round(Math.random() * 100),
-      59,
-      80,
-      (Math.random() * 100),
-      56,
-      (Math.random() * 100),
-      40];
-    this.barChartData[0].data = data;
-  }
 }

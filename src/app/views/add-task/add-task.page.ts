@@ -15,10 +15,8 @@ export class AddTaskPage {
   @Select(TasksState) state$!: Observable<ITasksState>;
 
   form: FormGroup = new FormGroup({
-    id: new FormControl(new Date().getTime().toString()),
     title: new FormControl('', Validators.required),
     category: new FormControl(''),
-    completed: new FormControl(false)
   });
 
   constructor(

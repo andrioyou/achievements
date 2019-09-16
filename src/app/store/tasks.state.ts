@@ -1,13 +1,22 @@
 import { State, StateContext, Action, Store, NgxsOnInit } from '@ngxs/store';
-import { ITask } from '../core/interfaces/task.interface';
-import { GetTasks, SignOut, GetCategories, CompleteTask, AddTask, DeleteTask } from './tasks.actions';
-import { IUser } from '../core/interfaces/user.interface';
-import { AuthService } from '../core/services/auth.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../core/services/auth.service';
 import { FirestoreService } from '../core/services/firestore.service';
+import { ITask } from '../core/interfaces/task.interface';
+import { IUser } from '../core/interfaces/user.interface';
+import { Task } from '../core/models/task.model';
+import {
+  GetTasks, SignOut,
+  GetCategories, CompleteTask,
+  AddTask, DeleteTask,
+  ArchiveTask, GetTasksArchived,
+  SignIn
+} from './tasks.actions';
 
 export interface ITasksState {
   list: ITask[];
+  listArchived: ITask[];
   categories: string[];
   isAuthenticated: boolean;
   user: IUser | null;
@@ -17,12 +26,14 @@ export interface ITasksState {
   name: 'posts',
   defaults: {
     list: [],
+    listArchived: [],
     categories: [],
     isAuthenticated: false,
     user: null,
   }
 })
 export class TasksState implements NgxsOnInit {
+  subscriptions: Subscription[] = [];
 
   constructor(
     private store: Store,
@@ -32,50 +43,28 @@ export class TasksState implements NgxsOnInit {
   ) { }
 
   ngxsOnInit(ctx: StateContext<ITasksState>) {
-
-    ctx.patchState({ isAuthenticated: this.authService.isAuthenticated() });
+    this.store.dispatch(new SignIn());
 
     this.authService.user$.subscribe(user => {
       if (user) {
         this.firestoreService.writeUser(user);
-        this.store.dispatch(new GetTasks());
-        this.store.dispatch(new GetCategories());
-        ctx.patchState({
-          user,
-          isAuthenticated: true
-        });
+        this.store.dispatch(new SignIn());
       }
     });
   }
 
-  @Action(GetTasks)
-  getTasks(ctx: StateContext<ITasksState>) {
-    this.firestoreService.getTasks().subscribe(list => ctx.patchState({ list }));
+  cancelSubscriptions() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
   }
 
-  @Action(AddTask)
-  addTask(ctx: StateContext<ITasksState>, action: AddTask) {
-    this.firestoreService.addTask(action.task);
-  }
+  @Action(SignIn)
+  signIn(ctx: StateContext<ITasksState>) {
+    ctx.patchState({ isAuthenticated: this.authService.isAuthenticated() });
+    ctx.patchState({ user: this.authService.getUser() });
 
-  @Action(DeleteTask)
-  deleteTask(ctx: StateContext<ITasksState>, action: DeleteTask) {
-    this.firestoreService.deleteTask(action.task);
-  }
-
-  @Action(CompleteTask)
-  completeTask(ctx: StateContext<ITasksState>, action: CompleteTask) {
-    const list = ctx.getState().list;
-    const taskIndex = list.findIndex((item => item.id === action.task.id));
-    const task = list[taskIndex];
-    task.completed = true;
-    this.firestoreService.updateTask(task);
-  }
-
-  @Action(GetCategories)
-  getCategories(ctx: StateContext<ITasksState>) {
-    const categories = ['Job', 'Home'];
-    ctx.patchState({ categories });
+    this.store.dispatch(new GetTasks());
+    this.store.dispatch(new GetCategories());
   }
 
   @Action(SignOut)
@@ -87,7 +76,56 @@ export class TasksState implements NgxsOnInit {
         user: null,
         isAuthenticated: false
       });
+      this.cancelSubscriptions();
       this.router.navigate(['auth']);
     });
   }
+
+  @Action(GetTasks)
+  getTasks(ctx: StateContext<ITasksState>) {
+    const sub = this.firestoreService.getTasks().subscribe(list => ctx.patchState({ list }));
+    this.subscriptions.push(sub);
+  }
+
+  @Action(GetTasksArchived)
+  getTasksArchived(ctx: StateContext<ITasksState>) {
+    const sub = this.firestoreService.getTasksArchived().subscribe(listArchived => ctx.patchState({ listArchived }));
+    this.subscriptions.push(sub);
+  }
+
+  @Action(AddTask)
+  addTask(ctx: StateContext<ITasksState>, action: AddTask) {
+    this.firestoreService.addTask(new Task(action.task));
+  }
+
+  @Action(DeleteTask)
+  deleteTask(ctx: StateContext<ITasksState>, action: DeleteTask) {
+    this.firestoreService.deleteTask(action.task);
+  }
+
+  @Action(ArchiveTask)
+  archiveTask(ctx: StateContext<ITasksState>, action: ArchiveTask) {
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = list[taskIndex];
+    task.archived = true;
+    this.firestoreService.archiveTask(task);
+  }
+
+  @Action(CompleteTask)
+  completeTask(ctx: StateContext<ITasksState>, action: CompleteTask) {
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = list[taskIndex];
+    task.completed = true;
+    task.completedDate = new Date();
+    this.firestoreService.updateTask(task);
+  }
+
+  @Action(GetCategories)
+  getCategories(ctx: StateContext<ITasksState>) {
+    const categories = ['Home', 'Job', 'Family'];
+    ctx.patchState({ categories });
+  }
+
 }
