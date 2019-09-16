@@ -7,9 +7,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
   providedIn: 'root'
 })
 export class AuthService {
+  storeName = 'achievementsUserData';
   private userSubject = new Subject<IUser | null>();
   user$ = this.userSubject.asObservable();
-  storeName = 'achievementsUserData';
 
   constructor(
     private afAuth: AngularFireAuth

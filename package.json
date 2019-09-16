@@ -33,7 +33,6 @@
     "@w11k/ngx-componentdestroyed": "^4.1.4",
     "chart.js": "^2.8.0",
     "chartjs-plugin-datalabels": "^0.7.0",
-    "cordova-plugin-inappbrowser": "^3.1.0",
     "core-js": "^2.5.4",
     "firebase": "^6.6.0",
     "firebaseui": "^4.2.0",
@@ -72,8 +71,6 @@
   },
   "description": "An Ionic project",
   "cordova": {
-    "plugins": {
-      "cordova-plugin-inappbrowser": {}
-    }
+    "plugins": {}
   }
 }

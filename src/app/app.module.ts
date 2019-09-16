@@ -7,7 +7,6 @@ import { environment } from '@src/environments/environment';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 // app
 import { AppComponent } from './app.component';
@@ -30,10 +29,11 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 // firebase config
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
-  // signInFlow: 'redirect',
-  signInFlow: 'popup',
+  signInFlow: 'redirect',
+  // signInFlow: 'popup',
   signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+    // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.PROVIDER_ID
   ],
   tosUrl: '/terms',
   privacyPolicyUrl: '/privacy-policy',
@@ -55,8 +55,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
     ChartsModule,
   ],
-  providers: [StatusBar, SplashScreen, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    InAppBrowser],
+  providers: [StatusBar, SplashScreen, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
