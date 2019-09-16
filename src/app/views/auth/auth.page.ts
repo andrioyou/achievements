@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { TasksState, ITasksState } from '@src/app/store/tasks.state';
@@ -9,13 +9,13 @@ import { Router } from '@angular/router';
   templateUrl: './auth.page.html',
   styleUrls: ['./auth.page.scss'],
 })
-export class AuthPage implements OnInit {
+export class AuthPage {
   @Select(TasksState) state$!: Observable<ITasksState>;
   stateSub!: Subscription;
 
   constructor(private router: Router) { }
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.stateSub = this.state$.subscribe(state => {
       if (state.isAuthenticated) {
         this.router.navigate(['']);

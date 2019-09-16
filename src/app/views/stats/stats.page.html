@@ -6,6 +6,14 @@
 
 <ion-content>
   <app-grid-wrap>
-    <p>Statistics</p>
+    <canvas baseChart
+      [datasets]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [plugins]="barChartPlugins"
+      [legend]="barChartLegend"
+      [chartType]="barChartType">
+    </canvas>
+    <ion-button (click)="randomize()">Update</ion-button>
   </app-grid-wrap>
 </ion-content>

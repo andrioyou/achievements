@@ -44,11 +44,6 @@ export class TasksState implements NgxsOnInit {
           user,
           isAuthenticated: true
         });
-      } else {
-        ctx.patchState({
-          user: null,
-          isAuthenticated: false
-        });
       }
     });
   }
@@ -84,8 +79,14 @@ export class TasksState implements NgxsOnInit {
   }
 
   @Action(SignOut)
-  signOut() {
+  signOut(ctx: StateContext<ITasksState>) {
     this.authService.signOut().then(() => {
+      ctx.patchState({
+        list: [],
+        categories: [],
+        user: null,
+        isAuthenticated: false
+      });
       this.router.navigate(['auth']);
     });
   }

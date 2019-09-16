@@ -52,6 +52,6 @@ export class FirestoreService {
   }
 
   writeUser(user: IUser) {
-    this.userCollection.doc(user.uid).set(user);
+    this.userCollection.doc(user.uid).set({ ...user });
   }
 }
