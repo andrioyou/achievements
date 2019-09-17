@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { IUser } from '../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { IUser } from '../interfaces/user.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private storageKey = 'achievementsUser';
-  private userSubject = new Subject<IUser | null>();
-  user$ = this.userSubject.asObservable();
+  private userStateSubject = new BehaviorSubject<IUser | null>(this.getUser());
+  private userState$ = this.userStateSubject.asObservable();
 
   constructor(
     private afAuth: AngularFireAuth
@@ -20,13 +19,17 @@ export class AuthService {
         const user: IUser | null = userData.providerData[0];
         if (user) {
           this.setUser(user);
-          this.userSubject.next(user);
+          this.userStateSubject.next(user);
         }
       } else {
         this.removeUser();
-        this.userSubject.next(null);
+        this.userStateSubject.next(null);
       }
     });
+  }
+
+  getUserState() {
+    return this.userState$;
   }
 
   signOut() {

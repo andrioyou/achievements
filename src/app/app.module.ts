@@ -47,7 +47,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    NgxsModule.forRoot([TasksState]),
+    NgxsModule.forRoot([TasksState], { developmentMode: !environment.production }),
     CoreModule,
     SharedModule,
     AngularFireModule.initializeApp(environment.firebase),

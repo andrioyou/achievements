@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { TasksState, ITasksState } from '@src/app/store/tasks.state';
@@ -13,9 +13,8 @@ import { GetTasksArchived } from '@src/app/store/tasks.actions';
   templateUrl: './stats.page.html',
   styleUrls: ['./stats.page.scss'],
 })
-export class StatsPage {
+export class StatsPage implements OnInit {
   @Select(TasksState) state$!: Observable<ITasksState>;
-  stateSub!: Subscription;
 
   public barChartOptions: ChartOptions = {
     responsive: true,
@@ -40,13 +39,8 @@ export class StatsPage {
 
   constructor(private store: Store) { }
 
-  ionViewWillEnter() {
+  ngOnInit() {
     this.store.dispatch(new GetTasksArchived());
-    this.stateSub = this.state$.subscribe(d => console.log(d));
-  }
-
-  ionViewDidLeave() {
-    this.stateSub.unsubscribe();
   }
 
 }

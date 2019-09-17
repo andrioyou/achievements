@@ -1,5 +1,9 @@
 import { ITask } from '../core/interfaces/task.interface';
 
+export class RegisterUser {
+  static readonly type = '[Tasks] Register user';
+}
+
 export class SignIn {
   static readonly type = '[Tasks] Sign In';
 }

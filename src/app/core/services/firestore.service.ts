@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, EMPTY } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { IUser } from '../interfaces/user.interface';
@@ -13,15 +13,14 @@ export class FirestoreService {
   private userCollection!: AngularFirestoreCollection<IUser>;
   private tasksCollection!: AngularFirestoreCollection<ITask>;
   private tasksArchivedCollection!: AngularFirestoreCollection<ITask>;
-  private tasks$!: Observable<ITask[]>;
-  private tasksArchived$!: Observable<ITask[]>;
+  private tasks$: Observable<ITask[]> = EMPTY;
+  private tasksArchived$: Observable<ITask[]> = EMPTY;
 
   constructor(
     private afs: AngularFirestore,
     private authService: AuthService,
   ) {
-    this.init();
-    this.authService.user$.subscribe(user => {
+    this.authService.getUserState().subscribe(user => {
       if (user) {
         this.init();
       }
@@ -32,10 +31,8 @@ export class FirestoreService {
     const user: IUser | null = this.authService.getUser();
     if (user) {
       this.userCollection = this.afs.collection('users');
-
       this.tasksCollection = this.userCollection.doc(user.uid).collection('tasks');
       this.tasksArchivedCollection = this.userCollection.doc(user.uid).collection('tasksArchived');
-
       this.tasks$ = this.dataToTasks(this.tasksCollection);
       this.tasksArchived$ = this.dataToTasks(this.tasksArchivedCollection);
     }
@@ -78,7 +75,7 @@ export class FirestoreService {
     this.tasksArchivedCollection.doc(task.id).set({ ...task });
   }
 
-  writeUser(user: IUser) {
+  registerUser(user: IUser) {
     this.userCollection.doc(user.uid).set({ ...user });
   }
 }

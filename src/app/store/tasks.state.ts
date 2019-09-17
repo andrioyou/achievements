@@ -11,7 +11,8 @@ import {
   GetCategories, CompleteTask,
   AddTask, DeleteTask,
   ArchiveTask, GetTasksArchived,
-  SignIn
+  SignIn,
+  RegisterUser
 } from './tasks.actions';
 
 export interface ITasksState {
@@ -42,29 +43,38 @@ export class TasksState implements NgxsOnInit {
     private router: Router
   ) { }
 
-  ngxsOnInit(ctx: StateContext<ITasksState>) {
-    this.store.dispatch(new SignIn());
-
-    this.authService.user$.subscribe(user => {
-      if (user) {
-        this.firestoreService.writeUser(user);
-        this.store.dispatch(new SignIn());
-      }
-    });
-  }
-
   cancelSubscriptions() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions = [];
   }
 
+  ngxsOnInit(ctx: StateContext<ITasksState>) {
+    this.authService.getUserState().subscribe(user => {
+      if (user) {
+        this.store.dispatch(new SignIn());
+      }
+    });
+  }
+
+  @Action(RegisterUser)
+  registerUser(ctx: StateContext<ITasksState>) {
+    const user = this.authService.getUser();
+    if (user) {
+      this.firestoreService.registerUser(user);
+    }
+  }
+
   @Action(SignIn)
   signIn(ctx: StateContext<ITasksState>) {
-    ctx.patchState({ isAuthenticated: this.authService.isAuthenticated() });
-    ctx.patchState({ user: this.authService.getUser() });
-
-    this.store.dispatch(new GetTasks());
-    this.store.dispatch(new GetCategories());
+    const state = ctx.getState();
+    if (!state.isAuthenticated) {
+      ctx.patchState({
+        isAuthenticated: this.authService.isAuthenticated(),
+        user: this.authService.getUser()
+      });
+      this.store.dispatch(new GetTasks());
+      this.store.dispatch(new GetCategories());
+    }
   }
 
   @Action(SignOut)
