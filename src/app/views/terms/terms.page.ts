@@ -6,6 +6,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./terms.page.scss'],
 })
 export class TermsPage {
+  name = 'Achievements';
+  location = 'Ukraine';
 
   constructor() { }
 

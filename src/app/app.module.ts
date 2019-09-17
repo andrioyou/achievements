@@ -35,8 +35,6 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     // firebase.auth.GoogleAuthProvider.PROVIDER_ID,
     firebase.auth.EmailAuthProvider.PROVIDER_ID
   ],
-  tosUrl: '/terms',
-  privacyPolicyUrl: '/privacy-policy',
   credentialHelper: firebaseui.auth.CredentialHelper.NONE
 };
 
