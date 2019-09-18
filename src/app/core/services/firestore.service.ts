@@ -80,24 +80,24 @@ export class FirestoreService {
   }
 
   addTask(task: ITask) {
-    this.tasksCollection.doc(task.id).set({ ...task });
+    return this.tasksCollection.doc(task.id).set({ ...task });
   }
 
   deleteTask(task: ITask) {
-    this.tasksCollection.doc(task.id).delete();
+    return this.tasksCollection.doc(task.id).delete();
   }
 
   updateTask(task: ITask) {
-    this.tasksCollection.doc(task.id).update({ ...task });
+    return this.tasksCollection.doc(task.id).update({ ...task });
   }
 
   archiveTask(task: ITask) {
     this.tasksCollection.doc(task.id).delete();
-    this.tasksArchivedCollection.doc(task.id).set({ ...task });
+    return this.tasksArchivedCollection.doc(task.id).set({ ...task });
   }
 
   registerUser(user: IUser) {
-    this.userCollection.doc(user.uid).set({ ...user });
+    return this.userCollection.doc(user.uid).set({ ...user });
   }
 
   updateStats(task: ITask) {
@@ -105,10 +105,10 @@ export class FirestoreService {
     const dateLabel = this.dateToDateLabel(new Date());
     if (!task.completed) {
       // increment created
-      this.statsCollection.doc(dateLabel).set({ created: increment }, { merge: true });
+      return this.statsCollection.doc(dateLabel).set({ created: increment }, { merge: true });
     } else {
       // increment completed
-      this.statsCollection.doc(dateLabel).set({ completed: increment }, { merge: true });
+      return this.statsCollection.doc(dateLabel).set({ completed: increment }, { merge: true });
     }
   }
 }

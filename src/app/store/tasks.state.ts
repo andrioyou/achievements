@@ -15,6 +15,7 @@ import {
   GetStats
 } from './tasks.actions';
 import { ITaskStat } from '../core/interfaces/task-stat.interface';
+import { ToastService } from '../core/services/toast.service';
 
 export interface ITasksState {
   list: ITask[];
@@ -42,6 +43,7 @@ export class TasksState implements NgxsOnInit {
   constructor(
     private store: Store,
     private authService: AuthService,
+    private toastService: ToastService,
     private firestoreService: FirestoreService,
     private router: Router
   ) { }
@@ -121,13 +123,17 @@ export class TasksState implements NgxsOnInit {
   @Action(AddTask)
   addTask(ctx: StateContext<ITasksState>, action: AddTask) {
     const task = new Task(action.task);
+    this.firestoreService.updateStats(task).then(() => {
+      this.toastService.setMessage(`Task '${task.title}' was added!`);
+    });
     this.firestoreService.addTask(task);
-    this.firestoreService.updateStats(task);
   }
 
   @Action(DeleteTask)
   deleteTask(ctx: StateContext<ITasksState>, action: DeleteTask) {
-    this.firestoreService.deleteTask(action.task);
+    this.firestoreService.deleteTask(action.task).then(() => {
+      this.toastService.setMessage(`Task '${action.task.title}' was deleted!`);
+    });
   }
 
   @Action(CompleteTask)
@@ -137,7 +143,9 @@ export class TasksState implements NgxsOnInit {
     const task = { ...list[taskIndex] };
     task.completed = true;
     task.completedDate = new Date();
-    this.firestoreService.updateTask(task);
+    this.firestoreService.updateTask(task).then(() => {
+      this.toastService.setMessage(`Task '${task.title}' was completed!`);
+    });
   }
 
   @Action(ArchiveTask)
@@ -146,7 +154,9 @@ export class TasksState implements NgxsOnInit {
     const taskIndex = list.findIndex((item => item.id === action.task.id));
     const task = { ...list[taskIndex] };
     task.archived = true;
-    this.firestoreService.archiveTask(task);
+    this.firestoreService.archiveTask(task).then(() => {
+      this.toastService.setMessage(`Task '${task.title}' was archived!`);
+    });
     this.firestoreService.updateStats(task);
   }
 
