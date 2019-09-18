@@ -20,6 +20,14 @@ export class GetTasksArchived {
   static readonly type = '[Tasks] Get tasks archived';
 }
 
+export class GetStats {
+  static readonly type = '[Tasks] Get stats';
+}
+
+export class GetCategories {
+  static readonly type = '[Tasks] Get categories';
+}
+
 export class AddTask {
   static readonly type = '[Tasks] Add task';
   constructor(public task: ITask) { }
@@ -30,16 +38,12 @@ export class DeleteTask {
   constructor(public task: ITask) { }
 }
 
-export class ArchiveTask {
-  static readonly type = '[Tasks] Archive task';
-  constructor(public task: ITask) { }
-}
-
 export class CompleteTask {
   static readonly type = '[Tasks] Complete task';
   constructor(public task: ITask) { }
 }
 
-export class GetCategories {
-  static readonly type = '[Tasks] Get categories';
+export class ArchiveTask {
+  static readonly type = '[Tasks] Archive task';
+  constructor(public task: ITask) { }
 }

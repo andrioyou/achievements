@@ -5,8 +5,9 @@ import { TasksState, ITasksState } from '@src/app/store/tasks.state';
 
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
-import { Label } from 'ng2-charts';
-import { GetTasksArchived } from '@src/app/store/tasks.actions';
+import { Label, Color } from 'ng2-charts';
+import { GetStats } from '@src/app/store/tasks.actions';
+import { ITaskStat } from '@src/app/core/interfaces/task-stat.interface';
 
 @Component({
   selector: 'app-stats',
@@ -15,11 +16,19 @@ import { GetTasksArchived } from '@src/app/store/tasks.actions';
 })
 export class StatsPage implements OnInit {
   @Select(TasksState) state$!: Observable<ITasksState>;
+  subscription: Subscription | null = null;
 
-  public barChartOptions: ChartOptions = {
+  public chartOptions: ChartOptions = {
     responsive: true,
-    // We use these empty structures as placeholders for dynamic theming.
-    scales: { xAxes: [{}], yAxes: [{}] },
+    scales: {
+      xAxes: [{}], yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          suggestedMax: 10,
+          stepSize: 1,
+        }
+      }]
+    },
     plugins: {
       datalabels: {
         anchor: 'end',
@@ -27,20 +36,78 @@ export class StatsPage implements OnInit {
       }
     }
   };
-  public barChartLabels: Label[] = ['2006', '2007', '2008', '2009', '2010', '2011', '2012'];
-  public barChartType: ChartType = 'bar';
-  public barChartLegend = true;
-  public barChartPlugins = [pluginDataLabels];
-
-  public barChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 43], label: 'Created' },
-    { data: [81, 56, 55, 43, 65, 59, 80], label: 'Completed' },
+  public chartLabels: Label[] = [];
+  public chartType: ChartType = 'bar';
+  public chartLegend = true;
+  public chartPlugins = [pluginDataLabels];
+  private createdChartData: ChartDataSets = { data: [], label: 'Created' };
+  private completedChartData: ChartDataSets = { data: [], label: 'Completed' };
+  public chartData: ChartDataSets[] = [
+    this.createdChartData,
+    this.completedChartData,
+  ];
+  public chartColors: Color[] = [
+    { // warning
+      backgroundColor: 'rgba(253, 133, 101, 1)',
+      borderColor: '#fd8565',
+      pointBackgroundColor: 'rgba(253, 133, 101, 1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(253, 133, 101, 0.8)'
+    },
+    { // success
+      backgroundColor: 'rgba(16, 220, 96, 1)',
+      borderColor: '#10dc60',
+      pointBackgroundColor: 'rgba(16, 220, 96, 1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(16, 220, 96, 0.8)'
+    },
   ];
 
   constructor(private store: Store) { }
 
   ngOnInit() {
-    this.store.dispatch(new GetTasksArchived());
+    this.store.dispatch(new GetStats());
+  }
+
+  ionViewWillEnter() {
+    this.subscription = this.state$.subscribe(state => this.statsToChartData(state.stats));
+  }
+
+  ionViewDidLeave() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  statsToChartData(stats: ITaskStat[]) {
+    this.setChartLabels(stats);
+    this.setChartData(stats);
+
+  }
+
+  setChartLabels(stats: ITaskStat[]) {
+    this.chartLabels = stats.map(stat => stat.id);
+    if (this.chartLabels.length > 7) {
+      this.chartLabels.length = 7;
+    }
+  }
+
+  setChartData(stats: ITaskStat[]) {
+    const createdData: number[] = [];
+    const completedData: number[] = [];
+    stats.forEach((stat, index) => {
+      if (stat.created) {
+        createdData[index] = stat.created;
+      }
+      if (stat.completed) {
+        completedData[index] = stat.completed;
+      }
+    });
+    this.createdChartData.data = createdData;
+    this.completedChartData.data = completedData;
   }
 
 }
+

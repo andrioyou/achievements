@@ -11,14 +11,16 @@ import {
   GetCategories, CompleteTask,
   AddTask, DeleteTask,
   ArchiveTask, GetTasksArchived,
-  SignIn,
-  RegisterUser
+  SignIn, RegisterUser,
+  GetStats
 } from './tasks.actions';
+import { ITaskStat } from '../core/interfaces/task-stat.interface';
 
 export interface ITasksState {
   list: ITask[];
   listArchived: ITask[];
   categories: string[];
+  stats: ITaskStat[];
   isAuthenticated: boolean;
   user: IUser | null;
 }
@@ -29,6 +31,7 @@ export interface ITasksState {
     list: [],
     listArchived: [],
     categories: [],
+    stats: [],
     isAuthenticated: false,
     user: null,
   }
@@ -103,9 +106,23 @@ export class TasksState implements NgxsOnInit {
     this.subscriptions.push(sub);
   }
 
+  @Action(GetStats)
+  getStats(ctx: StateContext<ITasksState>) {
+    const sub = this.firestoreService.getStats().subscribe(stats => ctx.patchState({ stats }));
+    this.subscriptions.push(sub);
+  }
+
+  @Action(GetCategories)
+  getCategories(ctx: StateContext<ITasksState>) {
+    const categories = ['Home', 'Job', 'Family'];
+    ctx.patchState({ categories });
+  }
+
   @Action(AddTask)
   addTask(ctx: StateContext<ITasksState>, action: AddTask) {
-    this.firestoreService.addTask(new Task(action.task));
+    const task = new Task(action.task);
+    this.firestoreService.addTask(task);
+    this.firestoreService.updateStats(task);
   }
 
   @Action(DeleteTask)
@@ -113,29 +130,24 @@ export class TasksState implements NgxsOnInit {
     this.firestoreService.deleteTask(action.task);
   }
 
-  @Action(ArchiveTask)
-  archiveTask(ctx: StateContext<ITasksState>, action: ArchiveTask) {
-    const list = ctx.getState().list;
-    const taskIndex = list.findIndex((item => item.id === action.task.id));
-    const task = list[taskIndex];
-    task.archived = true;
-    this.firestoreService.archiveTask(task);
-  }
-
   @Action(CompleteTask)
   completeTask(ctx: StateContext<ITasksState>, action: CompleteTask) {
     const list = ctx.getState().list;
     const taskIndex = list.findIndex((item => item.id === action.task.id));
-    const task = list[taskIndex];
+    const task = { ...list[taskIndex] };
     task.completed = true;
     task.completedDate = new Date();
     this.firestoreService.updateTask(task);
   }
 
-  @Action(GetCategories)
-  getCategories(ctx: StateContext<ITasksState>) {
-    const categories = ['Home', 'Job', 'Family'];
-    ctx.patchState({ categories });
+  @Action(ArchiveTask)
+  archiveTask(ctx: StateContext<ITasksState>, action: ArchiveTask) {
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = { ...list[taskIndex] };
+    task.archived = true;
+    this.firestoreService.archiveTask(task);
+    this.firestoreService.updateStats(task);
   }
 
 }

@@ -7,12 +7,13 @@
 <ion-content>
   <app-grid-wrap>
     <canvas baseChart
-      [datasets]="barChartData"
-      [labels]="barChartLabels"
-      [options]="barChartOptions"
-      [plugins]="barChartPlugins"
-      [legend]="barChartLegend"
-      [chartType]="barChartType">
+      [datasets]="chartData"
+      [labels]="chartLabels"
+      [options]="chartOptions"
+      [plugins]="chartPlugins"
+      [legend]="chartLegend"
+      [chartType]="chartType"
+      [colors]="chartColors">
     </canvas>
   </app-grid-wrap>
 </ion-content>
