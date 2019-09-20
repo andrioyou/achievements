@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Archived</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-grid-wrap *ngIf="state$ | async as state">
+    <app-task-list
+      [list]="state.listArchived"
+      typeOfList="archived"
+      (taskDelete)="onDeleteTask($event)"
+    ></app-task-list>
+  </app-grid-wrap>
+</ion-content>

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ITask } from '@src/app/core/interfaces/task.interface';
+import { ITask } from '@core/interfaces/task.interface';
 
 @Component({
   selector: 'app-task-list',
@@ -8,14 +8,46 @@ import { ITask } from '@src/app/core/interfaces/task.interface';
 })
 export class TaskListComponent {
   @Input() list!: ITask[];
-  @Input() completedStatus = false;
-  @Output() taskClick = new EventEmitter<string>();
+  @Input() typeOfList: 'default' | 'completed' | 'archived' = 'default';
+
+  @Output() taskComplete = new EventEmitter<ITask>();
+  @Output() taskArchive = new EventEmitter<ITask>();
+  @Output() taskDelete = new EventEmitter<ITask>();
+  @Output() taskIncProgress = new EventEmitter<ITask>();
+  @Output() taskDecProgress = new EventEmitter<ITask>();
 
   constructor() { }
 
-  onTaskClick(id: string) {
+  onTaskComplete(task: ITask) {
+    if (task.hasProgress) {
+      return;
+    }
     setTimeout(() => {
-      this.taskClick.emit(id);
+      this.taskComplete.emit(task);
     }, 500);
+  }
+
+  onTaskArchive(task: ITask) {
+    this.taskArchive.emit(task);
+  }
+
+  onTaskDelete(task: ITask) {
+    this.taskDelete.emit(task);
+  }
+
+  onTaskIncProgress(task: ITask) {
+    this.taskIncProgress.emit(task);
+    if ((task.progressDone + 1) === task.progressLevel) {
+      setTimeout(() => {
+        this.taskComplete.emit(task);
+      }, 500);
+    }
+  }
+
+  onTaskDecProgress(task: ITask) {
+    if (task.progressDone <= 0) {
+      return;
+    }
+    this.taskDecProgress.emit(task);
   }
 }

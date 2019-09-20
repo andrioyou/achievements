@@ -5,6 +5,9 @@ export class Task implements ITask {
   title: string;
   completed: boolean;
   category: string;
+  hasProgress: boolean;
+  progressDone: number;
+  progressLevel: number;
   archived: boolean;
   createdDate: Date;
   completedDate: Date;
@@ -14,6 +17,9 @@ export class Task implements ITask {
     title: string;
     completed?: boolean;
     category?: string;
+    hasProgress?: boolean;
+    progressDone?: number;
+    progressLevel?: number;
     archived?: boolean;
     createdDate?: Date;
     completedDate?: Date;
@@ -22,6 +28,9 @@ export class Task implements ITask {
     this.title = params.title;
     this.completed = params.completed || false;
     this.category = params.category || '';
+    this.hasProgress = params.hasProgress || false;
+    this.progressDone = params.progressDone || 0;
+    this.progressLevel = params.progressLevel || 0;
     this.archived = params.archived || false;
     this.createdDate = new Date();
     this.completedDate = params.completedDate || new Date();

@@ -5,29 +5,26 @@ import { AuthGuard } from './core/guards/auth.guard';
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./views/tabs/tabs.module').then(m => m.TabsPageModule),
+    loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule),
     canActivate: [AuthGuard],
   },
   {
-    path: 'add-task',
-    loadChildren: './views/add-task/add-task.module#AddTaskPageModule'
-  },
-  {
     path: 'terms',
-    loadChildren: './views/terms/terms.module#TermsPageModule',
+    loadChildren: './pages/terms/terms.module#TermsPageModule',
   },
   {
     path: 'privacy-policy',
-    loadChildren: './views/privacy-policy/privacy-policy.module#PrivacyPolicyPageModule'
+    loadChildren: './pages/privacy-policy/privacy-policy.module#PrivacyPolicyPageModule'
   },
   {
     path: 'auth',
-    loadChildren: './views/auth/auth.module#AuthPageModule'
+    loadChildren: './pages/auth/auth.module#AuthPageModule'
   },
   {
     path: '**',
     redirectTo: '',
   },
+
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],

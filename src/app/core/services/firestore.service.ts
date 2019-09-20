@@ -84,7 +84,7 @@ export class FirestoreService {
   }
 
   deleteTask(task: ITask) {
-    return this.tasksCollection.doc(task.id).delete();
+    return this.tasksArchivedCollection.doc(task.id).delete();
   }
 
   updateTask(task: ITask) {

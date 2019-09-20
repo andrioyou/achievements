@@ -1,0 +1,112 @@
+import { Component, OnInit } from '@angular/core';
+import { Select, Store } from '@ngxs/store';
+import { Observable, Subscription } from 'rxjs';
+import { TasksState, ITasksState } from '@app/store/tasks.state';
+
+import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
+import * as pluginDataLabels from 'chartjs-plugin-datalabels';
+import { Label, Color } from 'ng2-charts';
+import { GetStats } from '@app/store/tasks.actions';
+import { ITaskStat } from '@core/interfaces/task-stat.interface';
+
+@Component({
+  selector: 'app-stats',
+  templateUrl: './stats.page.html',
+  styleUrls: ['./stats.page.scss'],
+})
+export class StatsPage implements OnInit {
+  @Select(TasksState) state$!: Observable<ITasksState>;
+  subscription: Subscription | null = null;
+
+  public chartOptions: ChartOptions = {
+    responsive: true,
+    scales: {
+      xAxes: [{}], yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          suggestedMax: 10,
+        }
+      }]
+    },
+    plugins: {
+      datalabels: {
+        anchor: 'end',
+        align: 'end',
+      }
+    }
+  };
+  public chartLabels: Label[] = [];
+  public chartType: ChartType = 'bar';
+  public chartLegend = true;
+  public chartPlugins = [pluginDataLabels];
+  private createdChartData: ChartDataSets = { data: [], label: 'Created' };
+  private completedChartData: ChartDataSets = { data: [], label: 'Completed' };
+  public chartData: ChartDataSets[] = [
+    this.createdChartData,
+    this.completedChartData,
+  ];
+  public chartColors: Color[] = [
+    { // warning
+      backgroundColor: 'rgba(253, 133, 101, 1)',
+      borderColor: '#fd8565',
+      pointBackgroundColor: 'rgba(253, 133, 101, 1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(253, 133, 101, 0.8)'
+    },
+    { // success
+      backgroundColor: 'rgba(16, 220, 96, 1)',
+      borderColor: '#10dc60',
+      pointBackgroundColor: 'rgba(16, 220, 96, 1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(16, 220, 96, 0.8)'
+    },
+  ];
+
+  constructor(private store: Store) { }
+
+  ngOnInit() {
+    this.store.dispatch(new GetStats());
+  }
+
+  ionViewWillEnter() {
+    this.subscription = this.state$.subscribe(state => this.statsToChartData(state.stats));
+  }
+
+  ionViewDidLeave() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  statsToChartData(stats: ITaskStat[]) {
+    this.setChartLabels(stats);
+    this.setChartData(stats);
+
+  }
+
+  setChartLabels(stats: ITaskStat[]) {
+    this.chartLabels = stats.map(stat => stat.id);
+    if (this.chartLabels.length > 7) {
+      this.chartLabels.length = 7;
+    }
+  }
+
+  setChartData(stats: ITaskStat[]) {
+    const createdData: number[] = [];
+    const completedData: number[] = [];
+    stats.forEach((stat, index) => {
+      if (stat.created) {
+        createdData[index] = stat.created;
+      }
+      if (stat.completed) {
+        completedData[index] = stat.completed;
+      }
+    });
+    this.createdChartData.data = createdData;
+    this.completedChartData.data = completedData;
+  }
+
+}
+

@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tasks</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-grid-wrap *ngIf="state$ | async as state">
+    <app-task-list
+      [list]="state.list"
+      typeOfList="default"
+      (taskComplete)="onCompleteTask($event)"
+      (taskIncProgress)="onTaskIncProgress($event)"
+      (taskDecProgress)="onTaskDecProgress($event)"
+    ></app-task-list>
+    <ion-button routerLink="/add-task" class="ion-margin-top" color="secondary" expand="block">Add new</ion-button>
+  </app-grid-wrap>
+</ion-content>

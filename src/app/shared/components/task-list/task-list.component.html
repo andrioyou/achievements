@@ -1,11 +1,57 @@
 <ion-list>
-  <ng-container *ngFor="let item of list">
-    <ion-item class="ion-no-padding" *ngIf="item.completed === completedStatus" (click)="onTaskClick(item)">
-      <ion-label>
-        {{ item.title }}
-        <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
-      </ion-label>
-      <ion-checkbox color="primary" slot="end" [checked]="item.completed"></ion-checkbox>
-    </ion-item>
+
+  <!-- DEFAULT -->
+  <ng-container *ngIf="typeOfList === 'default'">
+    <ng-container *ngFor="let item of list">
+      <ion-item class="ion-no-padding" *ngIf="item.completed === false" (click)="onTaskComplete(item)">
+
+        <ion-label>
+          {{ item.title }}
+          <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
+        </ion-label>
+
+        <ng-container *ngIf="item.hasProgress && !item.completed">
+          <ion-text>{{ item.progressDone }}/{{ item.progressLevel }}</ion-text>
+          <ion-button color="secondary" slot="end" (click)="onTaskDecProgress(item)">
+            <ion-icon slot="icon-only" name="remove"></ion-icon>
+          </ion-button>
+          <ion-button color="secondary" slot="end" class="ion-no-margin" (click)="onTaskIncProgress(item)">
+            <ion-icon slot="icon-only" name="add"></ion-icon>
+          </ion-button>
+        </ng-container>
+
+        <ng-container *ngIf="!item.hasProgress">
+          <ion-checkbox color="primary" slot="end" [checked]="item.completed"></ion-checkbox>
+        </ng-container>
+
+      </ion-item>
+    </ng-container>
   </ng-container>
+
+  <!-- COMPLETED -->
+  <ng-container *ngIf="typeOfList === 'completed'">
+    <ng-container *ngFor="let item of list">
+      <ion-item class="ion-no-padding" *ngIf="item.completed === true">
+        <ion-label>
+          {{ item.title }}
+          <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
+        </ion-label>
+        <ion-button color="secondary" (click)="onTaskArchive(item)">Archive</ion-button>
+      </ion-item>
+    </ng-container>
+  </ng-container>
+
+  <!-- ARCHIEVED -->
+  <ng-container *ngIf="typeOfList === 'archived'">
+    <ng-container *ngFor="let item of list">
+      <ion-item class="ion-no-padding">
+        <ion-label>
+          {{ item.title }}
+          <ion-text color="tertiary" *ngIf="item.category">({{ item.category }})</ion-text>
+        </ion-label>
+        <ion-button color="tertiary" (click)="onTaskDelete(item)">Delete</ion-button>
+      </ion-item>
+    </ng-container>
+  </ng-container>
+
 </ion-list>

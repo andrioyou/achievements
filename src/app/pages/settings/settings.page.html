@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-grid-wrap *ngIf="state$ | async as state">
+    
+    <ng-container *ngIf="state.user as user">
+      <ion-card class="ion-no-margin ion-margin-bottom">
+        <ion-img *ngIf="user.photoURL" [src]="user.photoURL"></ion-img>
+        <ion-card-header>
+          <ion-card-subtitle>{{ user.email }}</ion-card-subtitle>
+          <ion-card-title *ngIf="user.displayName">{{ user.displayName }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button class="ion-margin-bottom" *ngIf="user" (click)="onSignOut()">Sign out</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+
+    <ion-card class="ion-no-margin ion-margin-bottom">
+      <ion-card-header>
+        <ion-card-title>Archived tasks</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button color="secondary" routerLink="/archived">Archived</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+  </app-grid-wrap>
+</ion-content>

@@ -43,6 +43,16 @@ export class CompleteTask {
   constructor(public task: ITask) { }
 }
 
+export class IncProgressTask {
+  static readonly type = '[Tasks] Increment progress of task';
+  constructor(public task: ITask) { }
+}
+
+export class DecProgressTask {
+  static readonly type = '[Tasks] Decrement progress of task';
+  constructor(public task: ITask) { }
+}
+
 export class ArchiveTask {
   static readonly type = '[Tasks] Archive task';
   constructor(public task: ITask) { }

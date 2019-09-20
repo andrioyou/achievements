@@ -12,7 +12,9 @@ import {
   AddTask, DeleteTask,
   ArchiveTask, GetTasksArchived,
   SignIn, RegisterUser,
-  GetStats
+  GetStats,
+  IncProgressTask,
+  DecProgressTask
 } from './tasks.actions';
 import { ITaskStat } from '../core/interfaces/task-stat.interface';
 import { ToastService } from '../core/services/toast.service';
@@ -145,6 +147,31 @@ export class TasksState implements NgxsOnInit {
     task.completedDate = new Date();
     this.firestoreService.updateTask(task).then(() => {
       this.toastService.setMessage(`Task '${task.title}' was completed!`);
+    });
+  }
+
+  @Action(IncProgressTask)
+  incProgressTask(ctx: StateContext<ITasksState>, action: IncProgressTask) {
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = { ...list[taskIndex] };
+    if (task.progressDone < task.progressLevel) {
+      task.progressDone++;
+
+      this.firestoreService.updateTask(task).then(() => {
+        this.toastService.setMessage(`Task '${task.title}' was updated!`);
+      });
+    }
+  }
+
+  @Action(DecProgressTask)
+  decProgressTask(ctx: StateContext<ITasksState>, action: DecProgressTask) {
+    const list = ctx.getState().list;
+    const taskIndex = list.findIndex((item => item.id === action.task.id));
+    const task = { ...list[taskIndex] };
+    task.progressDone--;
+    this.firestoreService.updateTask(task).then(() => {
+      this.toastService.setMessage(`Task '${task.title}' was updated!`);
     });
   }
 
