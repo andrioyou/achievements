@@ -29,7 +29,7 @@ export interface ITasksState {
 }
 
 @State<ITasksState>({
-  name: 'posts',
+  name: 'tasks',
   defaults: {
     list: [],
     listArchived: [],
