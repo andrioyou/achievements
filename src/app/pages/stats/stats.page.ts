@@ -8,6 +8,7 @@ import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Label, Color } from 'ng2-charts';
 import { GetStats } from '@app/store/tasks.actions';
 import { ITaskStat } from '@core/interfaces/task-stat.interface';
+import { stat } from 'fs';
 
 @Component({
   selector: 'app-stats',
@@ -16,6 +17,7 @@ import { ITaskStat } from '@core/interfaces/task-stat.interface';
 })
 export class StatsPage implements OnInit {
   @Select(TasksState) state$!: Observable<ITasksState>;
+
   subscription: Subscription | null = null;
 
   public chartOptions: ChartOptions = {
@@ -71,7 +73,13 @@ export class StatsPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.subscription = this.state$.subscribe(state => this.statsToChartData(state.stats));
+    this.subscription = this.state$.subscribe(state => {
+      let stats = [...state.stats];
+      if (stats.length > 7) {
+        stats = stats.slice(Math.max(stats.length - 7, 1));
+      }
+      this.statsToChartData(stats);
+    });
   }
 
   ionViewDidLeave() {
@@ -83,14 +91,10 @@ export class StatsPage implements OnInit {
   statsToChartData(stats: ITaskStat[]) {
     this.setChartLabels(stats);
     this.setChartData(stats);
-
   }
 
   setChartLabels(stats: ITaskStat[]) {
-    this.chartLabels = stats.map(stat => stat.id);
-    if (this.chartLabels.length > 7) {
-      this.chartLabels.length = 7;
-    }
+    this.chartLabels = stats.map(stat => this.dateToDateLabel(stat.id));
   }
 
   setChartData(stats: ITaskStat[]) {
@@ -106,6 +110,18 @@ export class StatsPage implements OnInit {
     });
     this.createdChartData.data = createdData;
     this.completedChartData.data = completedData;
+  }
+
+  dateToDateLabel(date: string) {
+    const year = date.substring(0, 4);
+    const month = date.substring(4, 6);
+    const day = date.substring(6, 8);
+    return day + ' ' + this.getMonthName(+month) + ' ' + year;
+  }
+
+  getMonthName(monthNumber: number) {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return monthNames[monthNumber];
   }
 
 }

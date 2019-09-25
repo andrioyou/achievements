@@ -45,7 +45,7 @@ export class AddTaskPage {
     this.store.dispatch(new AddTask(this.form.value));
     this.form.reset();
     this.changeRouteService.allowChangeRoute = true;
-    this.router.navigate(['tasks']);
+    this.router.navigateByUrl('tasks');
   }
 
 }

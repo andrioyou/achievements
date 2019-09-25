@@ -23,7 +23,7 @@ export class AuthPage {
     this.stateSub = this.state$.subscribe(state => {
       if (state.isAuthenticated) {
         this.store.dispatch(new RegisterUser());
-        this.router.navigate(['']);
+        this.router.navigateByUrl('');
       }
     });
   }

@@ -33,12 +33,7 @@ export class FirestoreService {
   }
 
   private dateToDateLabel(date: Date): string {
-    return date.getDate() + ' ' + this.getMonthName(date.getMonth()) + ' ' + date.getFullYear();
-  }
-
-  private getMonthName(monthNumber: number) {
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return monthNames[monthNumber];
+    return date.getFullYear() + ('0' + date.getMonth()).slice(-2) + ('0' + date.getDate()).slice(-2);
   }
 
   private initUserData() {

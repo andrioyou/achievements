@@ -18,6 +18,7 @@ import {
 } from './tasks.actions';
 import { ITaskStat } from '../core/interfaces/task-stat.interface';
 import { ToastService } from '../core/services/toast.service';
+import { NgZone } from '@angular/core';
 
 export interface ITasksState {
   list: ITask[];
@@ -47,7 +48,8 @@ export class TasksState implements NgxsOnInit {
     private authService: AuthService,
     private toastService: ToastService,
     private firestoreService: FirestoreService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) { }
 
   cancelSubscriptions() {
@@ -94,7 +96,7 @@ export class TasksState implements NgxsOnInit {
         isAuthenticated: false
       });
       this.cancelSubscriptions();
-      this.router.navigate(['auth']);
+      this.ngZone.run(() => this.router.navigateByUrl('auth'));
     });
   }
 
