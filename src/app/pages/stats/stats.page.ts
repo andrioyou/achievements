@@ -8,7 +8,6 @@ import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Label, Color } from 'ng2-charts';
 import { GetStats } from '@app/store/tasks.actions';
 import { ITaskStat } from '@core/interfaces/task-stat.interface';
-import { stat } from 'fs';
 
 @Component({
   selector: 'app-stats',
