@@ -150,6 +150,7 @@ export class TasksState implements NgxsOnInit {
     this.firestoreService.updateTask(task).then(() => {
       this.toastService.setMessage(`Task '${task.title}' was completed!`);
     });
+    this.firestoreService.updateStats(task);
   }
 
   @Action(IncProgressTask)
@@ -186,7 +187,6 @@ export class TasksState implements NgxsOnInit {
     this.firestoreService.archiveTask(task).then(() => {
       this.toastService.setMessage(`Task '${task.title}' was archived!`);
     });
-    this.firestoreService.updateStats(task);
   }
 
 }

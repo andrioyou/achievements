@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
-import { Observable, Subscription } from 'rxjs';
 import { TasksState, ITasksState } from '@app/store/tasks.state';
+import { GetStats } from '@app/store/tasks.actions';
+import { Observable, Subscription } from 'rxjs';
+import { ITaskStat } from '@core/interfaces/task-stat.interface';
 
 import { ChartOptions, ChartType, ChartDataSets } from 'chart.js';
 import * as pluginDataLabels from 'chartjs-plugin-datalabels';
 import { Label, Color } from 'ng2-charts';
-import { GetStats } from '@app/store/tasks.actions';
-import { ITaskStat } from '@core/interfaces/task-stat.interface';
 
 @Component({
   selector: 'app-stats',
