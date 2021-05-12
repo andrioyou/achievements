@@ -29,7 +29,7 @@
     "@ionic/angular": "^4.7.1",
     "@ngxs/store": "^3.5.1",
     "@w11k/ngx-componentdestroyed": "^4.1.4",
-    "chart.js": "^2.8.0",
+    "chart.js": "^2.9.4",
     "chartjs-plugin-datalabels": "^0.7.0",
     "core-js": "^2.5.4",
     "firebase": "^6.6.2",
